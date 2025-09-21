@@ -1,60 +1,119 @@
+
 # nutriXpert-agent
 
-## Descrição
-projeto do agente para a api do sexto semestres de análise e desenvolvimento de sistemas
+## 📌 Descrição
 
-## Pré-requisitos
-Python, banco de dados de sua preferencia(neste caso será usado postgres)
+O **nutriXpert-agent** é um agente conversacional desenvolvido em **Python + FastAPI**, como parte do projeto do 6º semestre de **Análise e Desenvolvimento de Sistemas**.
+Ele responde perguntas relacionadas à **nutrição, hábitos alimentares e composição nutricional de alimentos**, utilizando **RAG (Retrieval-Augmented Generation)** para enriquecer suas respostas com base em documentos locais (ex.: PDFs e planilhas TACO).
 
-## Como rodar o projeto
-como iniciar o projeto localmente.
-recomendado utilizar um ambiente virtual python para instalar as dependencias
+---
+
+## ⚙️ Pré-requisitos
+
+* **Python 3.10+**
+* **PostgreSQL** (ou outro banco compatível, configurado via `DATABASE_URL`)
+* (Opcional) **Docker** para containerização
+* (Opcional) **Ollama** para rodar modelos locais, como o **MedGemma**
+
+---
+
+## 🚀 Como rodar o projeto
+
+### 1. Clonar o repositório
+
+```bash
+git clone https://github.com/SEU_USUARIO/nutriXpert-agent.git
+cd nutriXpert-agent
+```
+
+### 2. Criar ambiente virtual
 
 ```bash
 python -m venv .venv
-pip install -r requirements.txt
-
+source .venv/bin/activate   # Linux/Mac
+.venv\Scripts\activate      # Windows
 ```
 
-## Configurando o agente
-
-se for utilizar somente para teste sem a necessidade do modelo medgemma, troque no arquivo agent.py o model, existe um comentário explicando no arquivo. Por padrão esta como a variavel de ambiente ADK_MODEL
-
-para rodar com o medgemma o modo que esta estruturado o projeto sera necessario rodar localmente utilizando o ollama,
-utilize o modelfile no projeto para criar o mesmo.
-
-
-## Utilizando Docker (opcional)
-Se desejar rodar com Docker
+### 3. Instalar dependências
 
 ```bash
-# Exemplo: Usando Docker Compose
+pip install -r requirements.txt
+```
+
+### 4. Iniciar o servidor local
+
+```bash
+uvicorn main:app --reload --host 127.0.0.1 --port 8000
+```
+
+O projeto estará acessível em:
+📍 **Swagger UI:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+📍 **Redoc:** [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+
+---
+
+## 🐳 Utilizando Docker (opcional)
+
+Se preferir rodar via containers:
+
+```bash
 docker-compose up --build
 ```
 
-## Variáveis de ambiente
+---
 
-das variaveis de ambiete, as mais importantes são adicionar sua API_KEY que pode ser pega em https://aistudio.google.com/app/apikey,
-sera necessario criar um projeto para isso.
+## 🔑 Variáveis de ambiente
 
-e adaptar sua DATABASE_URL para o que for ser utilizado, o exemplo abaixo utiliza os dados do docker-compose
+Crie um arquivo `.env` na raiz do projeto com as seguintes configurações:
 
-o ADK_MODEL esta como gemini-2.0-flash pois é gratuito com a api key gratis
-
-```bash
+```ini
+# Google API (opcional para usar modelos Gemini)
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 GOOGLE_API_KEY=YOUR_API_KEY
 
+# Configuração do FastAPI
 FASTAPI_HOST=0.0.0.0
 FASTAPI_PORT=8000
 UVICORN_RELOAD=true
 
-
+# Configuração do agente
 ADK_APP_NAME=nutriXpert
 DATABASE_URL=postgresql+psycopg2://myuser:mypassword@localhost:5432/mydb
-ADK_MODEL=gemini-2.0-flash
+ADK_MODEL=gemini-2.0-flash   # Pode ser alterado para outro modelo (ex.: MedGemma via Ollama)
 ADK_SERIALIZE_RUNNER=false
-
-
 ```
+
+🔗 Sua API Key do Google pode ser gerada em: [Google AI Studio](https://aistudio.google.com/app/apikey).
+💡 O modelo padrão é o **Gemini 2.0 Flash**, gratuito no plano básico do Google AI Studio.
+
+
+---
+
+## 🧠 Implementação do RAG
+
+1. **Ingestão de documentos**
+
+   * Arquivos PDF e XLSX devem ser colocados na pasta `documents/`.
+   * A ingestão ocorre automaticamente no primeiro startup.
+
+2. **Vetorização**
+
+   * O conteúdo é dividido em *chunks* pelo `RecursiveCharacterTextSplitter`.
+   * Os embeddings são gerados com **HuggingFace (sentence-transformers/all-MiniLM-L6-v2)**.
+
+3. **Armazenamento**
+
+   * Os vetores são persistidos no **ChromaDB** (pasta `chroma_store/`).
+
+4. **Recuperação (Retriever)**
+
+   * Ao receber uma pergunta, o agente busca os *chunks* mais relevantes no ChromaDB.
+   * O contexto recuperado é injetado antes da resposta final do modelo.
+
+---
+
+## Observações
+
+* Se quiser rodar com **MedGemma local**, altere o modelo no `agent.py` e rode o Ollama com o `Modelfile` disponível no projeto.
+* Se os documentos forem alterados, é necessário **deletar a pasta `chroma_store/`** e reiniciar a aplicação para regenerar os embeddings.
 
