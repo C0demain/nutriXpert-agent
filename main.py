@@ -1,9 +1,9 @@
 import asyncio
 import os
 from fastapi import FastAPI
-from agent import create_runner
-from routes import router as api_router
-from rag_service import ingest_documents, build_vectorstore, get_vectorstore, CHROMA_PATH
+from app.core.agent import create_runner
+from app.api.routes import router as api_router
+from app.rag.rag_service import ingest_documents, build_vectorstore, get_vectorstore, CHROMA_PATH
 
 app = FastAPI(title="nutriXpert")
 
