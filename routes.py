@@ -7,8 +7,9 @@ from google.genai.types import Content, Part
 from utils import append_message_to_state
 from agent import AGENT_OUTPUT_KEY
 
-router = APIRouter()
+from rag_service import retrieve_context
 
+router = APIRouter()
 
 # -------- MODELS --------
 class AgentRequest(BaseModel):
@@ -63,8 +64,11 @@ async def run_agent(req: AgentRequest, request: Request,):
     await append_message_to_state(session_service, app_name, req.user_id, req.session_id,
                                   author="user", role="user", text=req.question)
 
-    # 3) prepara conteúdo
-    content = Content(role="user", parts=[Part(text=req.question)])
+    # 3) injeta contexto do RAG
+    context_preview = retrieve_context(req.question)
+    question_with_context = f"Contexto relevante dos documentos:\n{context_preview}\n\nPergunta: {req.question}"
+
+    content = Content(role="user", parts=[Part(text=question_with_context)])
 
     # 4) executa runner
     final_text = ""
@@ -96,12 +100,16 @@ async def run_agent(req: AgentRequest, request: Request,):
     messages = []
     if updated_session and getattr(updated_session, "state", None):
         messages = updated_session.state.get("messages", [])
+        
+    # dentro de run_agent, antes de chamar runner.run_async
+    context_preview = retrieve_context(req.question)
 
     return {
         "user_id": req.user_id,
         "session_id": req.session_id,
         "answer": final_text.strip(),
-        "history": messages
+        "history": messages,
+        "context_used": context_preview
     }
 
 
