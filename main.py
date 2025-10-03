@@ -2,11 +2,11 @@ import asyncio
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.core.agent import create_runner
-from app.api.routes import router as api_router
-from app.rag.rag_service import ingest_documents, build_vectorstore, get_vectorstore, CHROMA_PATH
+from nutrixpert.agent import create_runner
+from nutrixpert.api.routes import router as api_router
+from nutrixpert.rag.rag_service import ingest_documents, build_vectorstore, get_vectorstore, CHROMA_PATH
 
-app = FastAPI(title="nutriXpert")
+app = FastAPI(title="nutrixpert")
 
 origins = [
     "http://localhost",

@@ -6,14 +6,14 @@ from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
 from google.adk.models.lite_llm import LiteLlm
 
-from app.core.prompt import ROOT_AGENT_INSTR
+from nutrixpert.core.prompt import ROOT_AGENT_INSTR
 
 # carregar variáveis de ambiente
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-ADK_APP_NAME = os.getenv("ADK_APP_NAME", "nutriXpert")
-ADK_MODEL = os.getenv("ADK_MODEL", "gemini-2.0-flash")
+ADK_APP_NAME = os.getenv("ADK_APP_NAME")
+ADK_MODEL = os.getenv("ADK_MODEL")
 ADK_SERIALIZE_RUNNER = os.getenv("ADK_SERIALIZE_RUNNER", "false").lower() in ("1", "true", "yes")
 AGENT_OUTPUT_KEY = "answer"
 
@@ -23,8 +23,8 @@ def build_agent() -> Agent:
     Constrói um Agent.
     """
     return Agent(
-        name="nutriXpert",
-        model=ADK_MODEL,     #LiteLlm(model="ollama_chat/medgemma-4b"), utilizar este para rodar o medgemma local, precisa rodar o ollama e colocar o nome que voce usou
+        name=ADK_APP_NAME,
+        model=LiteLlm(model=ADK_MODEL),
         instruction=ROOT_AGENT_INSTR,
         output_key=AGENT_OUTPUT_KEY,
     )
@@ -41,3 +41,6 @@ async def create_runner():
     runner_lock = asyncio.Lock() if ADK_SERIALIZE_RUNNER else None
 
     return runner, session_service, runner_lock, ADK_APP_NAME, DATABASE_URL, AGENT_OUTPUT_KEY
+
+
+agent = build_agent()
