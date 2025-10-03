@@ -79,13 +79,12 @@ UVICORN_RELOAD=true
 # Configuração do agente
 ADK_APP_NAME=nutriXpert
 DATABASE_URL=postgresql+psycopg2://myuser:mypassword@localhost:5432/mydb
-ADK_MODEL=gemini-2.0-flash   # Pode ser alterado para outro modelo (ex.: MedGemma via Ollama)
+ADK_MODEL=gemini-2.0-flash   # ou "ollama_chat/medgemma-4b" se usar via Ollama
 ADK_SERIALIZE_RUNNER=false
 ```
 
 🔗 Sua API Key do Google pode ser gerada em: [Google AI Studio](https://aistudio.google.com/app/apikey).
 💡 O modelo padrão é o **Gemini 2.0 Flash**, gratuito no plano básico do Google AI Studio.
-
 
 ---
 
@@ -112,8 +111,59 @@ ADK_SERIALIZE_RUNNER=false
 
 ---
 
+## 🧩 Usando o MedGemma via Ollama
+
+Se preferir rodar o agente com o **MedGemma** localmente:
+
+1. **Instalar o Ollama**
+   Baixe em: [https://ollama.com/download](https://ollama.com/download)
+   Verifique a instalação:
+
+   ```bash
+   ollama --version
+   ```
+
+2. **Usar um Modelfile**
+   Na raiz do projeto, certifique que existe o arquivo chamado `Modelfile` com o conteúdo:
+
+   ```dockerfile
+   FROM hf.co/unsloth/medgemma-4b-it-GGUF:Q4_K_M
+   ```
+
+   Esse comando usa a versão quantizada Q4_K_M publicada no Hugging Face.
+
+3. **Registrar o modelo no Ollama**
+
+   ```bash
+   ollama create medgemma-4b -f Modelfile
+   ```
+
+   Confirme se foi criado:
+
+   ```bash
+   ollama list
+   ```
+
+4. **Executar o modelo diretamente** (teste opcional):
+
+   ```bash
+   ollama run medgemma-4b
+   ```
+
+5. **Configurar o agente para usar o MedGemma**
+   No arquivo `.env`, altere a linha do modelo para:
+
+   ```ini
+   ADK_MODEL=ollama_chat/medgemma-4b
+   ```
+
+Agora o NutriXpert rodará utilizando o **MedGemma** local via Ollama.
+
+---
+
 ## Observações
 
-* Se quiser rodar com **MedGemma local**, altere o modelo no `agent.py` e rode o Ollama com o `Modelfile` disponível no projeto.
+* Se quiser rodar com **Gemini** (default), mantenha `ADK_MODEL=gemini-2.0-flash`.
+* Se quiser rodar com **MedGemma**, precisa do **Ollama** instalado e do **Modelfile** configurado.
 * Se os documentos forem alterados, é necessário **deletar a pasta `chroma_store/`** e reiniciar a aplicação para regenerar os embeddings.
 
