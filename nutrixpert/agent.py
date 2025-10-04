@@ -2,11 +2,12 @@ import os
 import asyncio
 from dotenv import load_dotenv
 from google.adk.agents import Agent
-from google.adk.runners import Runner
-from google.adk.sessions import DatabaseSessionService
+from google.adk.agents import LlmAgent
+
 from google.adk.models.lite_llm import LiteLlm
 
 from nutrixpert.core.prompt import ROOT_AGENT_INSTR
+from nutrixpert.core.tools.retrieve_context import retrieve_context_tool, get_taco_vectorstore_tool
 
 # carregar variáveis de ambiente
 load_dotenv()
@@ -19,28 +20,18 @@ AGENT_OUTPUT_KEY = "answer"
 
 
 def build_agent() -> Agent:
-    """
-    Constrói um Agent.
-    """
-    return Agent(
+    
+    root_agent = LlmAgent(
         name=ADK_APP_NAME,
-        model=LiteLlm(model=ADK_MODEL),
+        model="gemini-2.0-flash",
         instruction=ROOT_AGENT_INSTR,
         output_key=AGENT_OUTPUT_KEY,
+        tools=[
+            retrieve_context_tool,
+            get_taco_vectorstore_tool
+        ],  
+        include_contents="default"
     )
+    return root_agent
 
-
-async def create_runner():
-    """
-    Cria e retorna um runner + session_service já configurados.
-    """
-    session_service = DatabaseSessionService(DATABASE_URL)
-    agent = build_agent()
-    runner = Runner(agent=agent, app_name=ADK_APP_NAME, session_service=session_service)
-
-    runner_lock = asyncio.Lock() if ADK_SERIALIZE_RUNNER else None
-
-    return runner, session_service, runner_lock, ADK_APP_NAME, DATABASE_URL, AGENT_OUTPUT_KEY
-
-
-agent = build_agent()
+root_agent = build_agent()

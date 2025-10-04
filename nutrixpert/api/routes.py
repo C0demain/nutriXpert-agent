@@ -7,7 +7,7 @@ from google.genai.types import Content, Part
 from nutrixpert.core.utils import append_message_to_state
 from nutrixpert.agent import AGENT_OUTPUT_KEY
 
-from nutrixpert.rag.rag_service import retrieve_context
+from nutrixpert.core.tools.retrieve_context import retrieve_context
 
 router = APIRouter()
 
