@@ -1,26 +1,12 @@
 import os
 import pandas as pd
 import pdfplumber
-import logging
-from datetime import datetime
+
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.schema import Document
-
-# --------- CONFIGURAÇÃO DE LOGGING ---------
-LOG_DIR = "logs"
-os.makedirs(LOG_DIR, exist_ok=True)
-LOG_FILE = os.path.join(LOG_DIR, f"ingest_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.FileHandler(LOG_FILE, encoding="utf-8"),
-        logging.StreamHandler()
-    ],
-)
+from nutrixpert.logger import logging
 
 CHROMA_PATH = "chroma_store"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

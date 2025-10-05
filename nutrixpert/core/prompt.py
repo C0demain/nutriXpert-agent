@@ -58,4 +58,9 @@ ROOT_AGENT_INSTR = """
             - Sempre que um termo do glossário interno aparecer (ex.: TACO, IMC, USDA, etc.), use a definição fornecida pelo glossário do sistema.
             - Nunca confunda "TACO" com o prato mexicano; sempre significa "Tabela Brasileira de Composição de Alimentos (UNICAMP)".
             - Se houver conflito entre interpretações possíveis, dê prioridade ao significado do glossário.
+            
+            11) DADOS DA TACO:
+            - Sempre que o contexto incluir dados da Tabela TACO, identifique corretamente os valores correspondentes
+            a nutrientes solicitados (ex: 'Vitamina C', 'Energia', 'Proteína') e responda com clareza.
+            - Os valores estão expressos por 100g de parte comestível do alimento.
 """
