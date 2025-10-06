@@ -46,5 +46,5 @@ def retrieve_context(question: str, k: int = 3, score_threshold: float = 0.3) ->
     return context
 
 retrieve_context_tool = FunctionTool(
-    func=retrieve_context,
+    func=retrieve_context
 )

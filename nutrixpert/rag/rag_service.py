@@ -7,6 +7,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.schema import Document
 from nutrixpert.logger import logging
+from nutrixpert.rag.persist_taco_data import persist_xlsx_to_postgres
 
 CHROMA_PATH = "chroma_store"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -80,8 +81,7 @@ def ingest_documents(folder=DOCS_DIR):
             text = load_pdf(path)
             docs.append({"text": text, "metadata": {"source": fname, "type": "pdf"}})
         elif fname.lower().endswith(".xlsx"):
-            text = load_xlsx(path)
-            docs.append({"text": text, "metadata": {"source": fname, "type": "taco"}})
+            persist_xlsx_to_postgres(path)
         else:
             logging.info(f"⏭️ Ignorado: {fname}")
     logging.info(f"📚 Total de documentos carregados: {len(docs)}")

@@ -8,6 +8,7 @@ from google.adk.models.lite_llm import LiteLlm
 
 from nutrixpert.core.prompt import ROOT_AGENT_INSTR
 from nutrixpert.core.tools.retrieve_context import retrieve_context_tool
+from nutrixpert.core.tools.retrieve_taco_data import query_alimentos_tool
 
 # carregar variáveis de ambiente
 load_dotenv()
@@ -27,7 +28,8 @@ def build_agent() -> Agent:
         instruction=ROOT_AGENT_INSTR,
         output_key=AGENT_OUTPUT_KEY,
         tools=[
-            retrieve_context_tool
+            retrieve_context_tool,
+            query_alimentos_tool,
         ],  
         include_contents="default"
     )
