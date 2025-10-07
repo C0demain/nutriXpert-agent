@@ -57,7 +57,7 @@ async def run_agent(req: AgentRequest, request: Request,):
     session = await session_service.get_session(app_name=app_name, user_id=req.user_id, session_id=req.session_id)
     if session is None:
         session = await session_service.create_session(
-            app_name=app_name, user_id=req.user_id, session_id=req.session_id, state={"messages": []}
+            app_name=app_name, user_id=req.user_id, session_id=req.session_id, state={"userInfo":{} ,"messages": []}
         )
 
     # 2) salva mensagem do usuário

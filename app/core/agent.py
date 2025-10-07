@@ -5,6 +5,7 @@ from google.adk.agents import Agent
 from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
 from google.adk.models.lite_llm import LiteLlm
+from .tools import retrieve_user_info_tool
 
 from app.core.prompt import ROOT_AGENT_INSTR
 
@@ -27,6 +28,9 @@ def build_agent() -> Agent:
         model=ADK_MODEL,     #LiteLlm(model="ollama_chat/medgemma-4b"), utilizar este para rodar o medgemma local, precisa rodar o ollama e colocar o nome que voce usou
         instruction=ROOT_AGENT_INSTR,
         output_key=AGENT_OUTPUT_KEY,
+        tools=[retrieve_user_info_tool],
+        include_contents="default"
+
     )
 
 
