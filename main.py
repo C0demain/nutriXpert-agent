@@ -2,7 +2,7 @@ import asyncio
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from nutrixpert.agent import build_agent
+from nutrixpert.agent import build_root_agent
 from nutrixpert.api.routes import router as api_router
 from nutrixpert.rag.rag_service import ingest_documents, build_vectorstore, CHROMA_PATH
 from google.adk.runners import Runner
@@ -39,7 +39,7 @@ async def create_runner():
     Cria e retorna um runner + session_service já configurados.
     """
     session_service = DatabaseSessionService(DATABASE_URL)
-    agent = build_agent()
+    agent = build_root_agent()
     runner = Runner(agent=agent, app_name=ADK_APP_NAME, session_service=session_service)
 
     runner_lock = asyncio.Lock() if ADK_SERIALIZE_RUNNER else None

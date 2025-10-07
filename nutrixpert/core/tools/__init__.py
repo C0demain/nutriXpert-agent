@@ -1,2 +1,6 @@
 from .retrieve_context import retrieve_context_tool
 from .retrieve_taco_data import query_alimentos_tool
+from .calc_macros_tool import calc_macros_tool
+from .calc_tmb_tool import calc_tmb_tool
+from .meal_plan_tool import meal_plan_tool
+from .educational_content_tool import educational_content_tool
