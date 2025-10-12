@@ -46,6 +46,11 @@ pip install -r requirements.txt
 uvicorn main:app --reload --host 127.0.0.1 --port 8000
 ```
 
+### Executar ADK Web UI para testes
+```bash
+adk web
+```
+
 O projeto estará acessível em:
 📍 **Swagger UI:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 📍 **Redoc:** [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
