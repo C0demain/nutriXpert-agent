@@ -2,11 +2,24 @@ import asyncio
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.core.agent import create_runner
-from app.api.routes import router as api_router
-from app.rag.rag_service import ingest_documents, build_vectorstore, get_vectorstore, CHROMA_PATH
+from nutrixpert.agent import build_root_agent
+from nutrixpert.api.routes import router as api_router
+from nutrixpert.rag.rag_service import ingest_documents, build_vectorstore, CHROMA_PATH
+from google.adk.runners import Runner
+from google.adk.sessions import DatabaseSessionService
+from dotenv import load_dotenv
 
-app = FastAPI(title="nutriXpert")
+from nutrixpert.core.tools.retrieve_context import get_vectorstore
+
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL")
+ADK_APP_NAME = os.getenv("ADK_APP_NAME")
+ADK_SERIALIZE_RUNNER = os.getenv("ADK_SERIALIZE_RUNNER", "false").lower() in ("1", "true", "yes")
+AGENT_OUTPUT_KEY = "answer"
+
+app = FastAPI(title="nutrixpert")
 
 origins = [
     "http://localhost",
@@ -20,6 +33,19 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+async def create_runner():
+    """
+    Cria e retorna um runner + session_service já configurados.
+    """
+    session_service = DatabaseSessionService(DATABASE_URL)
+    agent = build_root_agent()
+    runner = Runner(agent=agent, app_name=ADK_APP_NAME, session_service=session_service)
+
+    runner_lock = asyncio.Lock() if ADK_SERIALIZE_RUNNER else None
+
+    return runner, session_service, runner_lock, ADK_APP_NAME, DATABASE_URL, AGENT_OUTPUT_KEY
+
 
 @app.on_event("startup")
 async def startup_event():

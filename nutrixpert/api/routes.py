@@ -4,10 +4,10 @@ from pydantic import BaseModel
 from typing import Optional
 from google.genai.types import Content, Part
 
-from app.core.utils import append_message_to_state
-from app.core.agent import AGENT_OUTPUT_KEY
+from nutrixpert.core.utils import append_message_to_state
+from nutrixpert.agent import AGENT_OUTPUT_KEY
 
-from app.rag.rag_service import retrieve_context
+from nutrixpert.core.tools.retrieve_context import retrieve_context
 
 router = APIRouter()
 
