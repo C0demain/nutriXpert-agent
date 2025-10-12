@@ -39,6 +39,7 @@ def retrieve_context(question: str, k: int = 3, score_threshold: float = 0.3) ->
         "imc": "IMC = Índice de Massa Corporal, peso(kg)/altura²(m).",
         "usda": "USDA FoodData Central = Base oficial de dados nutricionais dos EUA."
     }
+    
     for termo, definicao in termos_criticos.items():
         if termo in question.lower():
             context += f"\n\n[Glossário] {definicao}"

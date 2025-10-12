@@ -1,13 +1,15 @@
 import os
 from dotenv import load_dotenv
 from google.adk.agents import Agent, LlmAgent
-from nutrixpert.core.tools.retrieve_context import retrieve_context_tool
-from nutrixpert.core.tools.retrieve_taco_data import query_alimentos_tool
-from nutrixpert.core.tools.calc_tmb_tool import calc_tmb_tool
-from nutrixpert.core.tools.meal_plan_tool import meal_plan_tool
-from nutrixpert.core.tools.educational_content_tool import educational_content_tool
 from google.adk.models.lite_llm import LiteLlm
-
+from nutrixpert.core.tools import (
+    calc_macros_tool,
+    retrieve_context_tool,
+    query_alimentos_tool,
+    calc_tmb_tool,
+    meal_plan_tool,
+    educational_content_tool
+)
 from nutrixpert.core.prompt import (
     ROOT_AGENT_INSTR, 
     AGENT_NUTRICAO_INSTR, 
@@ -33,7 +35,10 @@ def build_nutricional_agent() -> Agent:
         model=ollama_medgemma,
         instruction=AGENT_NUTRICAO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[query_alimentos_tool, retrieve_context_tool],
+        tools=[
+            query_alimentos_tool, 
+            retrieve_context_tool
+        ],
         include_contents="default",
     )                               
 
@@ -46,7 +51,10 @@ def build_metabolico_agent() -> Agent:
         model="gemini-2.0-flash", # modelo especializado médico
         instruction=AGENT_METABOLICO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[calc_tmb_tool],
+        tools=[
+            calc_tmb_tool, 
+            calc_macros_tool
+        ],
         include_contents="default",
     )
 
@@ -58,7 +66,9 @@ def build_planejamento_agent() -> Agent:
         model="gemini-2.0-flash",
         instruction=AGENT_PLANEJAMENTO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[meal_plan_tool],
+        tools=[
+            meal_plan_tool
+        ],
         include_contents="default",
     )
 
@@ -70,7 +80,9 @@ def build_educativo_agent() -> Agent:
         model="gemini-2.0-flash",
         instruction=AGENT_EDUCATIVO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[educational_content_tool],
+        tools=[
+            educational_content_tool
+        ],
         include_contents="default",
     )
 
@@ -86,7 +98,13 @@ def build_root_agent() -> Agent:
         name=ADK_APP_NAME,
         model="gemini-2.0-flash",
         instruction=ROOT_AGENT_INSTR,
-        sub_agents=[nutricional, metabolico, planejamento, educativo],
+        description="Gerencia o fluxo entre subagentes de nutrição",
+        sub_agents=[
+            nutricional, 
+            metabolico, 
+            planejamento, 
+            educativo
+        ],
         include_contents="default",
     )
     return root_agent

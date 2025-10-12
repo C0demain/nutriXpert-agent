@@ -1,23 +1,54 @@
 from google.adk.tools import FunctionTool
 
-def calc_macros(calorias: int, objetivo: str = "manutencao"):
+def calc_macros(peso: float, calorias: int, objetivo: str = "manutencao"):
     """
     Calcula a distribuição de macros (carboidratos, proteínas, gorduras)
-    conforme o objetivo: 'emagrecimento', 'manutencao' ou 'ganho'.
-    """
-    objetivos = {
-        "emagrecimento": (0.45, 0.35, 0.20),
-        "manutencao": (0.50, 0.30, 0.20),
-        "ganho": (0.55, 0.25, 0.20),
-    }
+    com base no peso corporal e no objetivo:
+    'emagrecimento', 'manutencao' ou 'ganho'.
 
-    carb, prot, gord = objetivos.get(objetivo.lower(), (0.5, 0.3, 0.2))
+    Retorna valores em gramas e percentuais estimados.
+    """
+    # Definições médias de ingestão (g/kg)
+    if objetivo.lower() == "emagrecimento":
+        proteina_gkg = 2.0
+        gordura_gkg = 0.8
+    elif objetivo.lower() == "ganho":
+        proteina_gkg = 1.6
+        gordura_gkg = 1.0
+    else:  # manutenção
+        proteina_gkg = 1.8
+        gordura_gkg = 0.9
+
+    # Cálculo base
+    proteinas = peso * proteina_gkg
+    gorduras = peso * gordura_gkg
+
+    # Calorias parciais
+    kcal_prot = proteinas * 4
+    kcal_gord = gorduras * 9
+
+    # Calorias restantes vão para carboidratos
+    kcal_carb = calorias - (kcal_prot + kcal_gord)
+    carboidratos = kcal_carb / 4
+
+    # Percentuais finais
+    total_kcal = kcal_prot + kcal_gord + kcal_carb
+    perc_prot = round((kcal_prot / total_kcal) * 100, 1)
+    perc_gord = round((kcal_gord / total_kcal) * 100, 1)
+    perc_carb = round((kcal_carb / total_kcal) * 100, 1)
+
     return {
-        "Carboidratos (g)": round((calorias * carb) / 4, 1),
-        "Proteínas (g)": round((calorias * prot) / 4, 1),
-        "Gorduras (g)": round((calorias * gord) / 9, 1),
+        "Carboidratos (g)": round(carboidratos, 1),
+        "Proteínas (g)": round(proteinas, 1),
+        "Gorduras (g)": round(gorduras, 1),
+        "Distribuição (%)": {
+            "Carboidratos": perc_carb,
+            "Proteínas": perc_prot,
+            "Gorduras": perc_gord,
+        },
+        "Total (kcal)": round(total_kcal),
     }
 
 calc_macros_tool = FunctionTool(
-    func=calc_macros,
+    func=calc_macros
 )

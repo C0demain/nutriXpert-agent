@@ -19,6 +19,7 @@ def calc_tmb(sexo: str, idade: int, peso: float, altura: float, nivel_atividade:
     }
 
     gasto_total = tmb * fatores.get(nivel_atividade.lower(), 1.55)
+    
     return {
         "TMB (kcal)": round(tmb, 2),
         "Gasto Diário Estimado (kcal)": round(gasto_total, 2),

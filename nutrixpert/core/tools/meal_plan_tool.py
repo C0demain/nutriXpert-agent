@@ -5,6 +5,7 @@ def meal_plan(calorias: int, refeicoes: int = 5):
     Gera um plano alimentar diário com base nas calorias desejadas e número de refeições.
     """
     por_refeicao = calorias / refeicoes
+    
     return {
         "meta_diaria_kcal": calorias,
         "refeicoes": [
