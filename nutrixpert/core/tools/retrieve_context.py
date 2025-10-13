@@ -1,6 +1,6 @@
 import os
 from langchain_community.vectorstores import Chroma
-from nutrixpert.rag.rag_service import get_embeddings
+from nutrixpert.core.rag.rag_service import get_embeddings
 from google.adk.tools import FunctionTool
 
 CHROMA_PATH = "chroma_store"

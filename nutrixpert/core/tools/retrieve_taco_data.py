@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
-from nutrixpert.logger import logging
+from nutrixpert.utils.logger import logging
 from google.adk.tools import FunctionTool
 
 load_dotenv()

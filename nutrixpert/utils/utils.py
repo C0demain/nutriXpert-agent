@@ -1,4 +1,3 @@
-
 import uuid
 import time
 from google.adk.events import Event, EventActions
