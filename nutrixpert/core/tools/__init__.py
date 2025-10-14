@@ -4,3 +4,4 @@ from .calc_macros_tool import calc_macros_tool
 from .calc_tmb_tool import calc_tmb_tool
 from .meal_plan_tool import meal_plan_tool
 from .educational_content_tool import educational_content_tool
+from .feedback_memory import add_feedback_to_memory, search_related_feedbacks

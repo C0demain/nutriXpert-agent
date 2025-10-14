@@ -6,6 +6,7 @@ from google.genai.types import Content, Part
 
 from nutrixpert.core.models.feedback import Feedback
 from nutrixpert.core.schemas.feedback import FeedbackCreate, FeedbackResponse
+from nutrixpert.core.tools.feedback_memory import add_feedback_to_memory, search_related_feedbacks
 from nutrixpert.core.utils import append_message_to_state
 from nutrixpert.agent import AGENT_OUTPUT_KEY
 
@@ -71,7 +72,28 @@ async def run_agent(req: AgentRequest, request: Request,):
 
     # 3) injeta contexto do RAG
     context_preview = retrieve_context(req.question)
-    question_with_context = f"Contexto relevante dos documentos:\n{context_preview}\n\nPergunta: {req.question}"
+    
+    # 3.1) busca feedbacks relevantes
+    feedback_related = search_related_feedbacks(req.question, req.user_id)
+    if feedback_related:
+        feedback_text = "\n".join([
+            f"- Usuário anterior (nota {f['nota']}): {f['comentario']}"
+            for f in feedback_related
+        ])
+    else:
+        feedback_text = "Nenhum feedback relevante encontrado."
+
+    # 3.2) combina tudo em um prompt rico
+    question_with_context = f"""
+        Contexto relevante dos documentos:
+        {context_preview}
+
+        Feedbacks do usuário sobre respostas anteriores do agente:
+        {feedback_text}
+
+        Pergunta atual:
+    {req.question}
+    """
 
     content = Content(role="user", parts=[Part(text=question_with_context)])
 
@@ -106,7 +128,6 @@ async def run_agent(req: AgentRequest, request: Request,):
     if updated_session and getattr(updated_session, "state", None):
         messages = updated_session.state.get("messages", [])
         
-    # dentro de run_agent, antes de chamar runner.run_async
     context_preview = retrieve_context(req.question)
 
     return {
@@ -121,7 +142,21 @@ async def run_agent(req: AgentRequest, request: Request,):
 def create_feedback(feedback: FeedbackCreate, db: Session = Depends(get_db)):
     """
     Recebe um feedback do usuário sobre a resposta do agente.
+    Impede múltiplos feedbacks para o mesmo message_id + user_id.
     """
+    
+    # Verifica se já existe feedback para essa resposta
+    existing = db.query(Feedback).filter(
+        Feedback.message_id == feedback.message_id,
+        Feedback.user_id == feedback.user_id
+    ).first()
+
+    if existing:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Já existe um feedback para esta resposta (message_id={feedback.message_id})."
+        )
+
     new_feedback = Feedback(
         message_id=feedback.message_id,
         user_id=feedback.user_id,
@@ -133,6 +168,16 @@ def create_feedback(feedback: FeedbackCreate, db: Session = Depends(get_db)):
     db.add(new_feedback)
     db.commit()
     db.refresh(new_feedback)
+    
+    # Adiciona ao vetorstore imediatamente
+    if new_feedback.comentario:
+        add_feedback_to_memory(
+            feedback_id=new_feedback.id,
+            comentario=new_feedback.comentario,
+            nota=new_feedback.nota,
+            user_id=new_feedback.user_id
+        )
+        
     return new_feedback
 
 
