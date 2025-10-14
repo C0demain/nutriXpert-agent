@@ -1,4 +1,3 @@
-import os
 import uuid
 from chromadb import Client
 from chromadb.config import Settings
@@ -8,8 +7,6 @@ from typing import Optional
 # Inicializa cliente local do Chroma (sem servidor externo)
 client = Client(Settings(anonymized_telemetry=False))
 collection = client.get_or_create_collection("feedback_memory")
-
-# Modelo de embeddings leve e rápido
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 def add_feedback_to_memory(feedback_id: int, comentario: str, nota: int, user_id: str):
@@ -36,6 +33,11 @@ def add_feedback_to_memory(feedback_id: int, comentario: str, nota: int, user_id
     )
 
 def search_related_feedbacks(query: str, user_id: Optional[str] = None, top_k: int = 3):
+    """
+    Busca feedbacks relacionados no índice vetorial.
+    Se user_id for fornecido, filtra feedbacks daquele usuário.
+    """
+    
     embedding = model.encode(query)
     filters = {}
     if user_id:

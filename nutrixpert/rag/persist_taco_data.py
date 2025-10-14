@@ -2,57 +2,18 @@ import os
 import math
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
-from sqlalchemy.orm import declarative_base, Session
+from sqlalchemy.orm import Session
 import pandas as pd
+from nutrixpert.core.models.alimentos_taco import AlimentosTaco
 from nutrixpert.logger import logging
-from sqlalchemy import (
-    create_engine, Column, Integer, String, Numeric
-)
+from sqlalchemy import create_engine
 
 load_dotenv()
 
 DB_URL = os.getenv("DATABASE_URL")
 
 engine = create_engine(DB_URL)
-Base = declarative_base()
 
-# Modelo ORM: AlimentosTaco
-class AlimentosTaco(Base):
-    __tablename__ = "alimentos_taco"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    numero = Column(Integer)
-    grupo = Column(String)
-    descricao = Column(String, unique=True)
-    umidade = Column(Numeric)
-    energia_kcal = Column(Numeric)
-    energia_kj = Column(Numeric)
-    proteina = Column(Numeric)
-    lipideos = Column(Numeric)
-    colesterol = Column(Numeric)
-    carboidrato = Column(Numeric)
-    fibra = Column(Numeric)
-    cinzas = Column(Numeric)
-    calcio = Column(Numeric)
-    magnesio = Column(Numeric)
-    manganes = Column(Numeric)
-    fosforo = Column(Numeric)
-    ferro = Column(Numeric)
-    sodio = Column(Numeric)
-    potassio = Column(Numeric)
-    cobre = Column(Numeric)
-    zinco = Column(Numeric)
-    retinol = Column(Numeric)
-    re = Column(Numeric)
-    rae = Column(Numeric)
-    tiamina = Column(Numeric)
-    riboflavina = Column(Numeric)
-    piridoxina = Column(Numeric)
-    niacina = Column(Numeric)
-    vitamina_c = Column(Numeric)
-
-# Criar tabela se não existir
-Base.metadata.create_all(engine)
 
 def normalize_value(value):
     # Trata nulos, NaN, traço ou valores textuais indevidos

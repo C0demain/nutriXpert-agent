@@ -1,0 +1,37 @@
+# Modelo ORM: AlimentosTaco
+from sqlalchemy import Column, Integer, Numeric, String
+from nutrixpert.db import Base 
+
+class AlimentosTaco(Base):
+    __tablename__ = "alimentos_taco"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    numero = Column(Integer)
+    grupo = Column(String)
+    descricao = Column(String, unique=True)
+    umidade = Column(Numeric)
+    energia_kcal = Column(Numeric)
+    energia_kj = Column(Numeric)
+    proteina = Column(Numeric)
+    lipideos = Column(Numeric)
+    colesterol = Column(Numeric)
+    carboidrato = Column(Numeric)
+    fibra = Column(Numeric)
+    cinzas = Column(Numeric)
+    calcio = Column(Numeric)
+    magnesio = Column(Numeric)
+    manganes = Column(Numeric)
+    fosforo = Column(Numeric)
+    ferro = Column(Numeric)
+    sodio = Column(Numeric)
+    potassio = Column(Numeric)
+    cobre = Column(Numeric)
+    zinco = Column(Numeric)
+    retinol = Column(Numeric)
+    re = Column(Numeric)
+    rae = Column(Numeric)
+    tiamina = Column(Numeric)
+    riboflavina = Column(Numeric)
+    piridoxina = Column(Numeric)
+    niacina = Column(Numeric)
+    vitamina_c = Column(Numeric)
