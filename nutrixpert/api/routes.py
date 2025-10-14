@@ -1,13 +1,18 @@
 import asyncio
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from typing import Optional
 from google.genai.types import Content, Part
 
+from nutrixpert.core.models.feedback import Feedback
+from nutrixpert.core.schemas.feedback import FeedbackCreate, FeedbackResponse
 from nutrixpert.core.utils import append_message_to_state
 from nutrixpert.agent import AGENT_OUTPUT_KEY
 
 from nutrixpert.core.tools.retrieve_context import retrieve_context
+
+from sqlalchemy.orm import Session
+from nutrixpert.db import get_db
 
 router = APIRouter()
 
@@ -111,6 +116,24 @@ async def run_agent(req: AgentRequest, request: Request,):
         "history": messages,
         "context_used": context_preview
     }
+
+@router.post("/feedback", response_model=FeedbackResponse)
+def create_feedback(feedback: FeedbackCreate, db: Session = Depends(get_db)):
+    """
+    Recebe um feedback do usuário sobre a resposta do agente.
+    """
+    new_feedback = Feedback(
+        message_id=feedback.message_id,
+        user_id=feedback.user_id,
+        nota=feedback.nota,
+        atendeu_expectativas=feedback.atendeu_expectativas,
+        comentario=feedback.comentario
+    )
+
+    db.add(new_feedback)
+    db.commit()
+    db.refresh(new_feedback)
+    return new_feedback
 
 
 @router.get("/sessions/{user_id}/{session_id}", response_model=SessionInfoResponse)

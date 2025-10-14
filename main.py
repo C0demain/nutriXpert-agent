@@ -8,6 +8,7 @@ from nutrixpert.rag.rag_service import ingest_documents, build_vectorstore, CHRO
 from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
 from dotenv import load_dotenv
+from nutrixpert.db import Base, engine
 
 from nutrixpert.core.tools.retrieve_context import get_vectorstore
 
@@ -18,6 +19,8 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 ADK_APP_NAME = os.getenv("ADK_APP_NAME")
 ADK_SERIALIZE_RUNNER = os.getenv("ADK_SERIALIZE_RUNNER", "false").lower() in ("1", "true", "yes")
 AGENT_OUTPUT_KEY = "answer"
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="nutrixpert")
 
