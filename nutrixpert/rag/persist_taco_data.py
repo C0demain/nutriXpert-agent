@@ -1,19 +1,15 @@
 import os
 import math
-from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 import pandas as pd
 from nutrixpert.core.models.alimentos_taco import AlimentosTaco
+from nutrixpert.db import DATABASE_URL
+from nutrixpert.core.utils.constants import DATABASE_URL
 from nutrixpert.logger import logging
 from sqlalchemy import create_engine
 
-load_dotenv()
-
-DB_URL = os.getenv("DATABASE_URL")
-
-engine = create_engine(DB_URL)
-
+engine = create_engine(DATABASE_URL)
 
 def normalize_value(value):
     # Trata nulos, NaN, traço ou valores textuais indevidos

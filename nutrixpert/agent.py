@@ -1,5 +1,3 @@
-import os
-from dotenv import load_dotenv
 from google.adk.agents import Agent, LlmAgent
 from nutrixpert.core.tools import (
     calc_macros_tool,
@@ -16,12 +14,7 @@ from nutrixpert.core.prompt import (
     AGENT_PLANEJAMENTO_INSTR, 
     AGENT_EDUCATIVO_INSTR
 )
-
-load_dotenv()
-
-ADK_APP_NAME = os.getenv("ADK_APP_NAME")
-AGENT_OUTPUT_KEY = "answer"
-ADK_MODEL = os.getenv("ADK_MODEL")
+from nutrixpert.core.utils.constants import ADK_APP_NAME, ADK_MODEL, AGENT_OUTPUT_KEY
 
 def build_nutricional_agent() -> Agent:
     """Agente especialista em composição e substituições alimentares"""

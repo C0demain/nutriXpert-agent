@@ -4,21 +4,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from nutrixpert.agent import build_root_agent
 from nutrixpert.api.routes import router as api_router
+from nutrixpert.core.utils.constants import ADK_APP_NAME, ADK_SERIALIZE_RUNNER, AGENT_OUTPUT_KEY, DATABASE_URL
 from nutrixpert.rag.rag_service import ingest_documents, build_vectorstore, CHROMA_PATH
 from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
-from dotenv import load_dotenv
 from nutrixpert.db import Base, engine
 
 from nutrixpert.core.tools.retrieve_context import get_vectorstore
-
-load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-DATABASE_URL = os.getenv("DATABASE_URL")
-ADK_APP_NAME = os.getenv("ADK_APP_NAME")
-ADK_SERIALIZE_RUNNER = os.getenv("ADK_SERIALIZE_RUNNER", "false").lower() in ("1", "true", "yes")
-AGENT_OUTPUT_KEY = "answer"
 
 Base.metadata.create_all(bind=engine)
 

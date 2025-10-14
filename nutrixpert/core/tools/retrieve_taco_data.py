@@ -1,14 +1,9 @@
-import os
-from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
+from nutrixpert.core.utils.constants import DATABASE_URL
 from nutrixpert.logger import logging
 from google.adk.tools import FunctionTool
 
-load_dotenv()
-
-DB_URL = os.getenv("DATABASE_URL")
-
-engine = create_engine(DB_URL)
+engine = create_engine(DATABASE_URL)
 
 def query_alimentos(question: str):
     """

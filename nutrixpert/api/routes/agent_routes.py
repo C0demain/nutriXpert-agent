@@ -1,16 +1,10 @@
-import os
 from fastapi import APIRouter, Request, HTTPException
 from google.genai.types import Content, Part
 from nutrixpert.core.schemas.agent_request import AgentRequest
 from nutrixpert.core.tools.retrieve_context import retrieve_context
 from nutrixpert.core.tools.feedback_memory import search_related_feedbacks
-from nutrixpert.core.utils import append_message_to_state
-
-from dotenv import load_dotenv
-
-load_dotenv()
-
-ADK_APP_NAME = os.getenv("ADK_APP_NAME")
+from nutrixpert.core.utils.constants import ADK_APP_NAME
+from nutrixpert.core.utils.utils import append_message_to_state
 
 router = APIRouter()
 
