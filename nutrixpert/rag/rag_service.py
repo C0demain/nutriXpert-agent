@@ -6,12 +6,9 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.schema import Document
+from nutrixpert.core.utils.constants import CHROMA_PATH, DOCS_DIR
 from nutrixpert.logger import logging
 from nutrixpert.rag.persist_taco_data import persist_xlsx_to_postgres
-
-CHROMA_PATH = "chroma_store"
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DOCS_DIR = os.path.join(BASE_DIR, "..", "..", "documents")
 
 # --------- Loaders ---------
 def load_pdf(path: str) -> str:
