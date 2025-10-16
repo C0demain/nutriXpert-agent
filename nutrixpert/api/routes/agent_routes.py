@@ -18,7 +18,7 @@ async def run_agent(req: AgentRequest, request: Request):
 
     runner = request.app.state.runner
     session_service = request.app.state.session_service
-    app_name = ADK_APP_NAME
+    app_name = ADK_APP_NAME or request.app.state.app_name
 
     # Garante sessão
     session = await session_service.get_session(app_name=app_name, user_id=req.user_id, session_id=req.session_id)
@@ -40,14 +40,14 @@ async def run_agent(req: AgentRequest, request: Request):
     ]) if feedback_related else "Nenhum feedback relevante encontrado."
 
     question_with_context = f"""
-    Contexto relevante dos documentos:
-    {context_preview}
+        Contexto relevante dos documentos:
+        {context_preview}
 
-    Feedbacks do usuário sobre respostas anteriores:
-    {feedback_text}
+        Feedbacks do usuário sobre respostas anteriores:
+        {feedback_text}
 
-    Pergunta atual:
-    {req.question}
+        Pergunta atual:
+        {req.question}
     """
 
     content = Content(role="user", parts=[Part(text=question_with_context)])
