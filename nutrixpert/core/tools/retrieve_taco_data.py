@@ -7,39 +7,41 @@ engine = create_engine(DATABASE_URL)
 
 def query_alimentos(question: str):
     """
-    Busca informações no banco de dados TACO com base em uma pergunta ou termo.
-    Exemplo: 'pinhão', 'lentilha', 'feijão carioca'
+    Busca informações nutricionais na Tabela TACO com base em uma pergunta.
+    Retorna todas as colunas encontradas para o alimento pesquisado.
     """
-    logging.info(f"🔎 Buscando alimentos que correspondem a: {question}")
+
+    logging.info(f"🔎 Buscando dados da TACO para: {question}")
 
     query = text("""
-        SELECT descricao, energia_kcal, proteina, lipideos, carboidrato, fibra
+        SELECT *
         FROM alimentos_taco
         WHERE LOWER(descricao) LIKE LOWER(:search)
         ORDER BY descricao ASC
-        LIMIT 10
+        LIMIT 5
     """)
 
     with engine.connect() as conn:
-        result = conn.execute(query, {"search": f"%{question}%"})
-        rows = result.fetchall()
+        result = conn.execute(query, {"search": f"%{question}%"}).fetchall()
 
-    if not rows:
+    if not result:
         logging.info("⚠️ Nenhum alimento encontrado.")
-        return "Nenhum alimento encontrado para esse termo."
+        return "Nenhum alimento encontrado para esse termo na Tabela TACO."
 
-    # Monta resposta textual amigável
     resposta = []
-    for desc, kcal, prot, lip, carb, fib in rows:
-        resposta.append(
-            f"🍽️ **{desc}** — {kcal or 0:.1f} kcal, "
-            f"{prot or 0:.2f}g proteína, "
-            f"{lip or 0:.2f}g lipídios, "
-            f"{carb or 0:.2f}g carboidratos, "
-            f"{fib or 0:.2f}g fibras"
-        )
+    for row in result:
+        dados = row._mapping
+        descricao = dados.get("descricao", "Desconhecido")
 
-    return "\n".join(resposta)
+        # Monta uma listagem de campos e valores não nulos
+        info = [f"🍽️ **{descricao}**"]
+        for coluna, valor in dados.items():
+            if coluna != "descricao" and valor not in (None, ""):
+                info.append(f"- {coluna}: {valor}")
+
+        resposta.append("\n".join(info))
+
+    return "\n\n".join(resposta)
 
 query_alimentos_tool = FunctionTool(
     func=query_alimentos
