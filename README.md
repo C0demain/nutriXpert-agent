@@ -205,8 +205,8 @@ Cada usuário passa a ter uma experiência **personalizada**, com respostas cada
 
 ## Exemplo ADK Web
 
-![Interface do ADK Web - exemplo 1](./docs-readme/adk-web-example-1.png)
-![Interface do ADK Web - exemplo 2](./docs-readme/adk-web-example-2.png)
+![Interface do ADK Web - exemplo 1](./imgs-readme/adk-web-example-1.png)
+![Interface do ADK Web - exemplo 2](./imgs-readme/adk-web-example-2.png)
 ---
 
 ### Exemplo de fluxo completo
