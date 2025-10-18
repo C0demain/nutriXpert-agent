@@ -1,4 +1,5 @@
 from google.adk.agents import Agent, LlmAgent
+from google.genai import types
 from nutrixpert.core.tools import (
     calc_macros_tool,
     retrieve_context_tool,
@@ -16,35 +17,48 @@ from nutrixpert.core.prompt import (
 )
 from nutrixpert.core.utils.constants import ADK_APP_NAME, ADK_MODEL, AGENT_OUTPUT_KEY
 
+
 def build_nutricional_agent() -> Agent:
     """Agente especialista em composição e substituições alimentares"""
-
     return LlmAgent(
         name="Agente_Nutricional",
         model=ADK_MODEL,
+        description="Especialista em composição e substituições alimentares",
         instruction=AGENT_NUTRICAO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[
-            query_alimentos_tool, 
-            retrieve_context_tool
-        ],
+        tools=[query_alimentos_tool, retrieve_context_tool],
         include_contents="default",
-    )                               
+        generate_content_config=types.GenerateContentConfig(
+            temperature=0.3,  # mais exato, menos criativo
+            safety_settings=[
+                types.SafetySetting(
+                    category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    threshold=types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                )
+            ],
+        ),
+    )
 
 
 def build_metabolico_agent() -> Agent:
-    
     """Agente responsável por cálculos de metabolismo e TMB"""
     return LlmAgent(
         name="Agente_Metabolico",
         model=ADK_MODEL,
+        description="Responsável por cálculos de metabolismo e TMB",
         instruction=AGENT_METABOLICO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[
-            calc_tmb_tool, 
-            calc_macros_tool
-        ],
+        tools=[calc_tmb_tool, calc_macros_tool],
         include_contents="default",
+        generate_content_config=types.GenerateContentConfig(
+            temperature=0.2,  # respostas mais determinísticas
+            safety_settings=[
+                types.SafetySetting(
+                    category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    threshold=types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                )
+            ],
+        ),
     )
 
 
@@ -53,12 +67,20 @@ def build_planejamento_agent() -> Agent:
     return LlmAgent(
         name="Agente_Planejamento",
         model=ADK_MODEL,
+        description="Especialista em planejamento de cardápios",
         instruction=AGENT_PLANEJAMENTO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[
-            meal_plan_tool
-        ],
+        tools=[meal_plan_tool],
         include_contents="default",
+        generate_content_config=types.GenerateContentConfig(
+            temperature=0.7,  # mais criativo para sugerir combinações
+            safety_settings=[
+                types.SafetySetting(
+                    category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    threshold=types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                )
+            ],
+        ),
     )
 
 
@@ -67,12 +89,20 @@ def build_educativo_agent() -> Agent:
     return LlmAgent(
         name="Agente_Educativo",
         model=ADK_MODEL,
+        description="Responde dúvidas teóricas sobre nutrição",
         instruction=AGENT_EDUCATIVO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[
-            educational_content_tool
-        ],
+        tools=[educational_content_tool],
         include_contents="default",
+        generate_content_config=types.GenerateContentConfig(
+            temperature=0.6,  # tom mais natural e explicativo
+            safety_settings=[
+                types.SafetySetting(
+                    category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    threshold=types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                )
+            ],
+        ),
     )
 
 
@@ -83,20 +113,23 @@ def build_root_agent() -> Agent:
     planejamento = build_planejamento_agent()
     educativo = build_educativo_agent()
 
-    root_agent = LlmAgent(
+    return LlmAgent(
         name=ADK_APP_NAME,
         model=ADK_MODEL,
         instruction=ROOT_AGENT_INSTR,
         description="Gerencia o fluxo entre subagentes de nutrição",
-        sub_agents=[
-            nutricional, 
-            metabolico, 
-            planejamento, 
-            educativo
-        ],
+        sub_agents=[nutricional, metabolico, planejamento, educativo],
         include_contents="default",
+        generate_content_config=types.GenerateContentConfig(
+            temperature=0.5,  # equilíbrio entre lógica e flexibilidade
+            safety_settings=[
+                types.SafetySetting(
+                    category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    threshold=types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                )
+            ],
+        ),
     )
-    return root_agent
 
 
 # instancia final
