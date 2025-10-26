@@ -1,0 +1,1 @@
+FROM hf.co/unsloth/medgemma-4b-it-GGUF:Q4_K_M
