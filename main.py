@@ -17,8 +17,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="nutrixpert")
 
 origins = [
-    "http://localhost",
-    "http://localhost:3000",
+    "http://localhost:8080", # Spring Boot API
 ]
 
 app.add_middleware(
