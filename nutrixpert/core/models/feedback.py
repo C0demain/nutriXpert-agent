@@ -7,6 +7,7 @@ class Feedback(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     message_id = Column(String(64), nullable=False)
+    session_id = Column(String(64), nullable=False)
     user_id = Column(String(64), nullable=True)
     nota = Column(Integer, nullable=False)
     atendeu_expectativas = Column(Boolean, nullable=False)
