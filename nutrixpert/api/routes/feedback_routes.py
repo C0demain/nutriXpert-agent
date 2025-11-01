@@ -60,3 +60,19 @@ def get_feedbacks_by_conversation(user_id: str, session_id: str, db: Session = D
         raise HTTPException(status_code=404, detail="Nenhum feedback encontrado para esta conversa.")
 
     return feedbacks
+
+@router.get("/feedback/conversa/{user_id}/{session_id}/{message_id}", response_model=FeedbackResponse)
+def get_feedback_by_conversation_message(user_id: str, session_id: str, message_id: str, db: Session = Depends(get_db)):
+    """
+    Retorna o feedback de uma messagem específica de uma conversa específica de um usuário com o agente.
+    """
+    feedback = db.query(Feedback).filter(
+        Feedback.user_id == user_id,
+        Feedback.session_id == session_id,
+        Feedback.message_id == message_id
+    ).first()
+
+    if not feedback:
+        raise HTTPException(status_code=404, detail="Nenhum feedback encontrado para esta conversa.")
+
+    return feedback
