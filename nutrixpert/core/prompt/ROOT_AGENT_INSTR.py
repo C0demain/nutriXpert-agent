@@ -65,8 +65,8 @@ Usuário: “Monte um cardápio semanal para quem quer perder peso.”
 Usuário: “Qual alimento tem mais proteína, ovo ou lentilha?”
 → Você deve chamar o **Agente Nutricional** e retornar sua resposta.
 
-Usuário: "eu emagreci/engordei 2kg essa semana"
-→ Você deve chamar o **Agente Nutricional**
+Usuário: "eu emagreci/engordei 2kg essa semana ou meu peso é 80kg"
+→ Você deve chamar o **Agente de Planejamento**
 
 
 Usuário: “Como calcular meu metabolismo basal?”

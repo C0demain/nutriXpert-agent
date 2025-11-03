@@ -72,7 +72,7 @@ def build_planejamento_agent() -> Agent:
         description="Especialista em planejamento de cardápios",
         instruction=AGENT_PLANEJAMENTO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[meal_plan_tool],
+        tools=[meal_plan_tool, update_user_weight_tool],
         include_contents="default",
         generate_content_config=types.GenerateContentConfig(
             temperature=0.7,  # mais criativo para sugerir combinações
