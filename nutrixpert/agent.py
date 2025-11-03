@@ -6,7 +6,9 @@ from nutrixpert.core.tools import (
     query_alimentos_tool,
     calc_tmb_tool,
     meal_plan_tool,
-    educational_content_tool
+    educational_content_tool,
+    retrieve_user_info_tool,
+    update_user_weight_tool
 )
 from nutrixpert.core.prompt import (
     ROOT_AGENT_INSTR, 
@@ -70,7 +72,7 @@ def build_planejamento_agent() -> Agent:
         description="Especialista em planejamento de cardápios",
         instruction=AGENT_PLANEJAMENTO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[meal_plan_tool],
+        tools=[meal_plan_tool, update_user_weight_tool],
         include_contents="default",
         generate_content_config=types.GenerateContentConfig(
             temperature=0.7,  # mais criativo para sugerir combinações
@@ -118,6 +120,7 @@ def build_root_agent() -> Agent:
         model=ADK_MODEL,
         instruction=ROOT_AGENT_INSTR,
         description="Gerencia o fluxo entre subagentes de nutrição",
+        tools=[retrieve_user_info_tool],
         sub_agents=[nutricional, metabolico, planejamento, educativo],
         include_contents="default",
         generate_content_config=types.GenerateContentConfig(
