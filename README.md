@@ -76,6 +76,9 @@ ADK_APP_NAME=nutriXpert
 DATABASE_URL=postgresql+psycopg2://myuser:mypassword@localhost:5432/mydb
 ADK_MODEL=gemini-2.0-flash
 ADK_SERIALIZE_RUNNER=false
+
+# Segredo para comunicação com o backend
+TOKEN_LOCAL=segredo_super_secreto
 ```
 
 🔗 Gere sua API Key em [Google AI Studio](https://aistudio.google.com/app/apikey).
