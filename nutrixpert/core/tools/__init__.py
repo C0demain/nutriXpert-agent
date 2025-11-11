@@ -7,3 +7,5 @@ from .educational_content_tool import educational_content_tool
 from .feedback_memory import add_feedback_to_memory, search_related_feedbacks
 from .user.get_user_info import retrieve_user_info_tool
 from .user.update_user_weight import update_user_weight_tool
+from .anamnese.create_user_anamnese import create_user_anamnese_tool
+from .anamnese.update_user_anamnese import update_user_anamnese_tool
