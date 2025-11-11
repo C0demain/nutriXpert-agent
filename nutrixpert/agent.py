@@ -9,7 +9,8 @@ from nutrixpert.core.tools import (
     educational_content_tool,
     retrieve_user_info_tool,
     update_user_weight_tool,
-    create_user_anamnese_tool
+    create_user_anamnese_tool,
+    update_user_anamnese_tool
 )
 from nutrixpert.core.prompt import (
     ROOT_AGENT_INSTR, 
@@ -51,7 +52,7 @@ def build_anamnese_agent() -> Agent:
         description="agente especializado em criar e atualizar anamneses",
         instruction=AGENT_ANAMNESE_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[create_user_anamnese_tool],
+        tools=[create_user_anamnese_tool, update_user_anamnese_tool],
         include_contents="default",
         generate_content_config=types.GenerateContentConfig(
             temperature=0.3,
