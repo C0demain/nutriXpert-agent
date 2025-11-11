@@ -31,7 +31,11 @@ def build_nutricional_agent() -> Agent:
         description="Especialista em composição e substituições alimentares",
         instruction=AGENT_NUTRICAO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[query_alimentos_tool, retrieve_context_tool],
+        tools=[
+            query_alimentos_tool, 
+            retrieve_context_tool,
+            retrieve_user_info_tool
+        ],
         include_contents="default",
         generate_content_config=types.GenerateContentConfig(
             temperature=0.3,  # mais exato, menos criativo
@@ -74,7 +78,11 @@ def build_metabolico_agent() -> Agent:
         description="Responsável por cálculos de metabolismo e TMB",
         instruction=AGENT_METABOLICO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[calc_tmb_tool, calc_macros_tool],
+        tools=[
+            calc_tmb_tool, 
+            calc_macros_tool,
+            retrieve_user_info_tool
+        ],
         include_contents="default",
         generate_content_config=types.GenerateContentConfig(
             temperature=0.2,  # respostas mais determinísticas
@@ -96,7 +104,11 @@ def build_planejamento_agent() -> Agent:
         description="Especialista em planejamento de cardápios",
         instruction=AGENT_PLANEJAMENTO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[meal_plan_tool, update_user_weight_tool],
+        tools=[
+            meal_plan_tool, 
+            update_user_weight_tool,
+            retrieve_user_info_tool
+        ],
         include_contents="default",
         generate_content_config=types.GenerateContentConfig(
             temperature=0.7,  # mais criativo para sugerir combinações
@@ -118,7 +130,10 @@ def build_educativo_agent() -> Agent:
         description="Responde dúvidas teóricas sobre nutrição",
         instruction=AGENT_EDUCATIVO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[educational_content_tool],
+        tools=[
+            educational_content_tool,
+            retrieve_user_info_tool
+        ],
         include_contents="default",
         generate_content_config=types.GenerateContentConfig(
             temperature=0.6,  # tom mais natural e explicativo
