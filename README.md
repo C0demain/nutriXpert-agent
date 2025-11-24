@@ -4,8 +4,7 @@
 
 O **nutriXpert-agent** é um agente conversacional inteligente desenvolvido em **Python + FastAPI**, como parte do projeto do 6º semestre de **Análise e Desenvolvimento de Sistemas**.
 
-Ele responde perguntas sobre **nutrição, hábitos alimentares e composição nutricional de alimentos**, utilizando **RAG (Retrieval-Augmented Generation)** para combinar **contexto extraído de documentos locais** (como PDFs da TACO e outros materiais de referência) com **modelos de linguagem** — podendo rodar **Gemini 2.0 Flash** (Google AI) ou **MedGemma** (via Ollama).
-
+Ele responde perguntas sobre **nutrição, hábitos alimentares e composição nutricional de alimentos**, utilizando **RAG (Retrieval-Augmented Generation)** para combinar **contexto extraído de documentos locais** (como PDFs da TACO e outros materiais de referência).
 
 ## Pré-requisitos
 
@@ -77,6 +76,9 @@ ADK_APP_NAME=nutriXpert
 DATABASE_URL=postgresql+psycopg2://myuser:mypassword@localhost:5432/mydb
 ADK_MODEL=gemini-2.0-flash
 ADK_SERIALIZE_RUNNER=false
+
+# Segredo para comunicação com o backend
+TOKEN_LOCAL=segredo_super_secreto
 ```
 
 🔗 Gere sua API Key em [Google AI Studio](https://aistudio.google.com/app/apikey).

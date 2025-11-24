@@ -80,15 +80,12 @@ async def get_session_history(user_id: str, session_id: str, request: Request, a
         events=None
     )
 
-
 @router.get("/{user_id}/list", response_model=list[SessionListItem])
 async def list_user_sessions(user_id: str, request: Request, app_name: Optional[str] = None):
-    """
-    Lista todas as sessões de um usuário.
-    Retorna o id da sessão e a primeira mensagem enviada pelo usuário.
-    """
     session_service = request.app.state.session_service
-    app_name = app_name or request.app.state.app_name  # garante app_name
+    app_name = app_name or request.app.state.app_name  
+
+    print(f"[DEBUG] Listando sessões do user_id={user_id}")
 
     try:
         sessions_resp = await session_service.list_sessions(app_name=app_name, user_id=user_id)
@@ -100,19 +97,49 @@ async def list_user_sessions(user_id: str, request: Request, app_name: Optional[
         raise HTTPException(status_code=404, detail="Nenhuma sessão encontrada para este usuário")
 
     output = []
-    for s in sessions:
-        state = getattr(s, "state", {}) or {}
-        messages = state.get("messages", [])
 
-        first_user_msg = None
-        for m in messages:
-            if m.get("author") == "user":
-                first_user_msg = m.get("text", "").strip()
-                break
+    for index, s in enumerate(sessions):
+        session_id = getattr(s, "id", None)
+
+        print(f"\n[DEBUG] Buscando state completo da sessão {session_id}")
+
+        full_session = await session_service.get_session(
+            app_name=app_name,
+            user_id=user_id,
+            session_id=session_id
+        )
+
+        if not full_session:
+            print(f"[WARN] Sessão {session_id} não encontrada no get_session")
+            first_user_msg = None
+        else:
+            state = getattr(full_session, "state", None) or {}
+            raw_messages = state.get("messages", []) or []
+
+            print(f"[DEBUG] RAW MESSAGES: {raw_messages}")
+
+            # --- deduplicação ---
+            seen = set()
+            deduped = []
+            for m in raw_messages:
+                mid = m.get("id")
+                if mid in seen:
+                    continue
+                seen.add(mid)
+                deduped.append(m)
+
+            # --- busca do first user message ---
+            first_user_msg = None
+            for m in deduped:
+                author = (m.get("author") or m.get("role") or "").lower()
+                if author == "user":
+                    first_user_msg = (m.get("text") or "").strip()
+                    break
 
         output.append(SessionListItem(
-            session_id=getattr(s, "id", None),
+            session_id=session_id,
             first_message=first_user_msg
         ))
 
     return output
+

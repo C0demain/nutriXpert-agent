@@ -6,14 +6,19 @@ from nutrixpert.core.tools import (
     query_alimentos_tool,
     calc_tmb_tool,
     meal_plan_tool,
-    educational_content_tool
+    educational_content_tool,
+    retrieve_user_info_tool,
+    update_user_weight_tool,
+    create_user_anamnese_tool,
+    update_user_anamnese_tool
 )
 from nutrixpert.core.prompt import (
     ROOT_AGENT_INSTR, 
     AGENT_NUTRICAO_INSTR, 
     AGENT_METABOLICO_INSTR, 
     AGENT_PLANEJAMENTO_INSTR, 
-    AGENT_EDUCATIVO_INSTR
+    AGENT_EDUCATIVO_INSTR,
+    AGENT_ANAMNESE_INSTR
 )
 from nutrixpert.core.utils.constants import ADK_APP_NAME, ADK_MODEL, AGENT_OUTPUT_KEY
 
@@ -26,10 +31,35 @@ def build_nutricional_agent() -> Agent:
         description="Especialista em composição e substituições alimentares",
         instruction=AGENT_NUTRICAO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[query_alimentos_tool, retrieve_context_tool],
+        tools=[
+            query_alimentos_tool, 
+            retrieve_context_tool,
+            retrieve_user_info_tool
+        ],
         include_contents="default",
         generate_content_config=types.GenerateContentConfig(
             temperature=0.3,  # mais exato, menos criativo
+            safety_settings=[
+                types.SafetySetting(
+                    category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    threshold=types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                )
+            ],
+        ),
+    )
+
+def build_anamnese_agent() -> Agent:
+    """Agente responsável por criar e atualizar a anamnese do paciente"""
+    return LlmAgent(
+        name="Agente_Anamnese",
+        model=ADK_MODEL,
+        description="agente especializado em criar e atualizar anamneses",
+        instruction=AGENT_ANAMNESE_INSTR,
+        output_key=AGENT_OUTPUT_KEY,
+        tools=[create_user_anamnese_tool, update_user_anamnese_tool],
+        include_contents="default",
+        generate_content_config=types.GenerateContentConfig(
+            temperature=0.3,
             safety_settings=[
                 types.SafetySetting(
                     category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
@@ -48,7 +78,11 @@ def build_metabolico_agent() -> Agent:
         description="Responsável por cálculos de metabolismo e TMB",
         instruction=AGENT_METABOLICO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[calc_tmb_tool, calc_macros_tool],
+        tools=[
+            calc_tmb_tool, 
+            calc_macros_tool,
+            retrieve_user_info_tool
+        ],
         include_contents="default",
         generate_content_config=types.GenerateContentConfig(
             temperature=0.2,  # respostas mais determinísticas
@@ -70,7 +104,11 @@ def build_planejamento_agent() -> Agent:
         description="Especialista em planejamento de cardápios",
         instruction=AGENT_PLANEJAMENTO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[meal_plan_tool],
+        tools=[
+            meal_plan_tool, 
+            update_user_weight_tool,
+            retrieve_user_info_tool
+        ],
         include_contents="default",
         generate_content_config=types.GenerateContentConfig(
             temperature=0.7,  # mais criativo para sugerir combinações
@@ -92,7 +130,10 @@ def build_educativo_agent() -> Agent:
         description="Responde dúvidas teóricas sobre nutrição",
         instruction=AGENT_EDUCATIVO_INSTR,
         output_key=AGENT_OUTPUT_KEY,
-        tools=[educational_content_tool],
+        tools=[
+            educational_content_tool,
+            retrieve_user_info_tool
+        ],
         include_contents="default",
         generate_content_config=types.GenerateContentConfig(
             temperature=0.6,  # tom mais natural e explicativo
@@ -112,13 +153,15 @@ def build_root_agent() -> Agent:
     metabolico = build_metabolico_agent()
     planejamento = build_planejamento_agent()
     educativo = build_educativo_agent()
+    anamnese = build_anamnese_agent()
 
     return LlmAgent(
         name=ADK_APP_NAME,
         model=ADK_MODEL,
         instruction=ROOT_AGENT_INSTR,
         description="Gerencia o fluxo entre subagentes de nutrição",
-        sub_agents=[nutricional, metabolico, planejamento, educativo],
+        tools=[retrieve_user_info_tool],
+        sub_agents=[nutricional, metabolico, planejamento, educativo, anamnese],
         include_contents="default",
         generate_content_config=types.GenerateContentConfig(
             temperature=0.5,  # equilíbrio entre lógica e flexibilidade
